@@ -1,0 +1,124 @@
+service: fedeira-ppi-services
+frameworkVersion: '4'
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+provider:
+  name: aws
+  tags:
+    Project: 'PPI'
+    Service: 'PPI-services'
+    Environment: "${opt:stage, 'dev'}"
+  runtime: nodejs18.x
+  profile: fedeira
+  region: us-east-2
+  environment:
+    IS_OFFLINE: ${opt:isOffline, 'false'}
+    TEMPLATE_EMAIL_REQUEST: ${ssm:/nadro/email/templates/request}
+    TEMPLATE_EMAIL_APPROVED: ${ssm:/nadro/email/templates/approved}
+    DEV_DYNAMODB_ENDPOINT: ${ssm:/nadro/services/api/dbhost}
+    BASE_SERVICE_URL: ${ssm:/nadro/services/api/baseurl}
+    SES_EMAIL_SOURCE: ${ssm:/nadro/email/source}
+    SES_EMAIL_DESTINATION: ${ssm:/nadro/email/destination}
+  iam:
+    role:
+      statements:
+        # Permit for dynamodb operations and ssm
+        - Effect: 'Allow'
+          Action:
+            - 'ssm:GetParameter'
+            - 'dynamodb:Query'
+            - 'dynamodb:Scan'
+            - 'dynamodb:GetItem'
+            - 'dynamodb:PutItem'
+            - 'dynamodb:UpdateItem'
+            - 'dynamodb:DeleteItem'
+          Resource: '*'
+
+        # Permit for logs operations in cloudwatch
+        - Effect: 'Allow'
+          Action:
+            - 'logs:CreateLogGroup'
+            - 'logs:CreateLogStream'
+            - 'logs:PutLogEvents'
+          Resource: 'arn:aws:logs:us-east-1:*:*'
+        # Permit for ses operations
+        - Effect: 'Allow'
+          Action:
+            - 'ses:SendEmail'
+            - 'ses:SendRawEmail'
+            - 'ses:ListIdentities'
+          Resource: '*'
+functions:
+  nadroSendEmailNotification:
+    handler: nadro-credit/handler.SendEmailNotification
+    timeout: 60
+    memorySize: 1024
+    events:
+      - http:
+          path: nadro-credit/send-credit-report
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
+
+resources:
+  Resources:
+    CreditBehaviorTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: CreditBehavior
+        AttributeDefinitions:
+          - AttributeName: nadroCode
+            AttributeType: S
+        KeySchema:
+          - AttributeName: nadroCode
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+  Outputs:
+    DynamoDBEndpoint:
+      Description: 'DynamoDB Host Endpoint'
+      Value: !Sub 'https://dynamodb.${AWS::Region}.amazonaws.com'
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    platform: node
+    exclude: ['aws-sdk']
+
+  dotenv:
+    path: .env
+    include:
+      - DEV_DYNAMODB_ENDPOINT
+      - NADRO_CUSTOMER_FORM
+      - NADRO_CREDIT_BEHAVIOR
+      - NADRO_CUSTOMER_DOCUMENT
+      - TEMPLATE_EMAIL_REQUEST
+      - TEMPLATE_EMAIL_APPROVED
+      - BASE_SERVICE_URL
+      - SES_EMAIL_SOURCE
+      - SES_EMAIL_DESTINATION
+
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      seed: true
+      convertEmptyValues: true
