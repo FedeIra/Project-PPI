@@ -17,11 +17,6 @@ provider:
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
     TEMPLATE_EMAIL_REQUEST: ${ssm:/nadro/email/templates/request}
-    TEMPLATE_EMAIL_APPROVED: ${ssm:/nadro/email/templates/approved}
-    DEV_DYNAMODB_ENDPOINT: ${ssm:/nadro/services/api/dbhost}
-    BASE_SERVICE_URL: ${ssm:/nadro/services/api/baseurl}
-    SES_EMAIL_SOURCE: ${ssm:/nadro/email/source}
-    SES_EMAIL_DESTINATION: ${ssm:/nadro/email/destination}
   iam:
     role:
       statements:
@@ -36,14 +31,13 @@ provider:
             - 'dynamodb:UpdateItem'
             - 'dynamodb:DeleteItem'
           Resource: '*'
-
         # Permit for logs operations in cloudwatch
         - Effect: 'Allow'
           Action:
             - 'logs:CreateLogGroup'
             - 'logs:CreateLogStream'
             - 'logs:PutLogEvents'
-          Resource: 'arn:aws:logs:us-east-1:*:*'
+          Resource: 'arn:aws:logs:us-east-2:*:*'
         # Permit for ses operations
         - Effect: 'Allow'
           Action:
@@ -113,7 +107,6 @@ custom:
       - BASE_SERVICE_URL
       - SES_EMAIL_SOURCE
       - SES_EMAIL_DESTINATION
-
   dynamodb:
     stages:
       - dev
