@@ -16,7 +16,9 @@ provider:
   region: us-east-2
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
-    TEMPLATE_EMAIL_REQUEST: ${ssm:/nadro/email/templates/request}
+    PPI_API_KEY: ${ssm:/ppi/apikey}
+    PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
+    PPI_CLIENT_KEY: ${ssm:/ppi/authorizedClient}
   iam:
     role:
       statements:
@@ -46,13 +48,13 @@ provider:
             - 'ses:ListIdentities'
           Resource: '*'
 functions:
-  nadroSendEmailNotification:
-    handler: nadro-credit/handler.SendEmailNotification
+  ppiLogin:
+    handler: ppi-services/handler.login
     timeout: 60
     memorySize: 1024
     events:
       - http:
-          path: nadro-credit/send-credit-report
+          path: ppi/login
           method: post
           cors:
             origin: '*'
