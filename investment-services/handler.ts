@@ -1,5 +1,7 @@
-import { GetInvestingProfileController } from './infrastructure/controllers/InvestingProfileController';
+// Internal Dependencies:
+import { GetAvailableBalanceController } from './infrastructure/controllers/GetAvailableBalanceController';
 
-export const getInvestmentProfile = async (event: any) => {
-  return await GetInvestingProfileController.handle(event);
+// All handlers:
+export const getAvailableBalance = async (event: any) => {
+  return await GetAvailableBalanceController.handle(event);
 };

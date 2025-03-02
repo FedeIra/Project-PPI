@@ -1,10 +1,9 @@
-export class LoginResponsePPI{
-  constructor(
-      public creationDate: string,
-      public expirationDate: string,
-      public accessToken: string,
-      public expires: number,
-      public refreshToken: string,
-      public tokenType: string
-  ){}
+// PPI Login response:
+export interface LoginResponsePPI {
+  creationDate: string;
+  expirationDate: string;
+  accessToken: string;
+  expires: number;
+  refreshToken: string;
+  tokenType: string;
 }

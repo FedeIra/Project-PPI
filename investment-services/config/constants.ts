@@ -1,5 +1,10 @@
 export const PPI_BASE_URL = {
-  ACCOUNT: `/api/${process.env.PPI_API_VERSION}/Account`,
+  SANDBOX: 'https://clientapi_sandbox.portfoliopersonal.com/',
+  PRODUCTION: 'https://clientapi.portfoliopersonal.com/',
+};
+
+export const PPI_BASE_ACCOUNT_URL = {
+  ACCOUNT: `api/${process.env.PPI_API_VERSION}/Account/`,
 };
 
 export const RESPONSE_MESSAGES = {

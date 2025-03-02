@@ -17,7 +17,7 @@ provider:
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
     PPI_API_VERSION: ${ssm:/ppi/apiVersion}
-    PPI_API_KEY: ${ssm:/ppi/apikey}
+    PPI_API_KEY: ${ssm:/ppi/apiKey}
     PPI_API_SECRET: ${ssm:/ppi/apiSecret}
     PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
     PPI_CLIENT_KEY: ${ssm:/ppi/clientKey}
@@ -25,10 +25,14 @@ provider:
   iam:
     role:
       statements:
-        # Permit for dynamodb operations and ssm
+        # Permit for ssm operations
         - Effect: 'Allow'
           Action:
             - 'ssm:GetParameter'
+          Resource: 'arn:aws:ssm:us-east-2:*:*'
+        # Permit for dynamodb operations
+        - Effect: 'Allow'
+          Action:
             - 'dynamodb:Query'
             - 'dynamodb:Scan'
             - 'dynamodb:GetItem'
@@ -52,12 +56,12 @@ provider:
           Resource: '*'
 functions:
   ppiLogin:
-    handler: investment-services/handler.getInvestmentProfile
+    handler: investment-services/handler.getAvailableBalance
     timeout: 60
     memorySize: 1024
     events:
       - http:
-          path: investment/investment-profile
+          path: investment/available-balance
           method: get
           cors:
             origin: '*'
