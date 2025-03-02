@@ -1,3 +1,3 @@
 export interface IPPIAccountRepository {
-  getInvestmentProfile(): Promise<any>;
+  getInvestingProfile(): Promise<any>;
 }
