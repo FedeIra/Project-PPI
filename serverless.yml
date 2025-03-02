@@ -1,4 +1,4 @@
-service: fedeira-ppi-services
+service: fedeira-investment-services
 frameworkVersion: '4'
 
 plugins:
@@ -8,18 +8,20 @@ plugins:
 provider:
   name: aws
   tags:
-    Project: 'PPI'
-    Service: 'PPI-services'
+    Project: 'IS'
+    Service: 'Investment-services'
     Environment: "${opt:stage, 'dev'}"
   runtime: nodejs18.x
   profile: fedeira
   region: us-east-2
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
-    PPI_API_VERSION: ${ssm:/ppi/apiVersion} || '1.0'
+    PPI_API_VERSION: ${ssm:/ppi/apiVersion}
     PPI_API_KEY: ${ssm:/ppi/apikey}
+    PPI_API_SECRET: ${ssm:/ppi/apiSecret}
     PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
-    PPI_CLIENT_KEY: ${ssm:/ppi/authorizedClient}
+    PPI_CLIENT_KEY: ${ssm:/ppi/clientKey}
+    PPI_ACCOUNT_NUMBER: ${ssm:/ppi/accountNumber}
   iam:
     role:
       statements:
@@ -50,22 +52,17 @@ provider:
           Resource: '*'
 functions:
   ppiLogin:
-    handler: ppi-services/handler.login
+    handler: investment-services/handler.getInvestmentProfile
     timeout: 60
     memorySize: 1024
     events:
       - http:
-          path: ppi/login
-          method: post
+          path: investment/investment-profile
+          method: get
           cors:
             origin: '*'
             headers:
               - Content-Type
-              - X-Amz-Date
-              - Authorization
-              - X-Api-Key
-              - X-Amz-Security-Token
-              - X-Amz-User-Agent
             allowCredentials: true
 
 resources:

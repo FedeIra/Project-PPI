@@ -17,6 +17,6 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["ppi-services/**/*"],
+  "include": ["investment-services/**/*"],
   "exclude": ["node_modules", "dist"]
 }
