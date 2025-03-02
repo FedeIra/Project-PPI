@@ -16,6 +16,7 @@ provider:
   region: us-east-2
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
+    PPI_API_VERSION: ${ssm:/ppi/apiVersion} || '1.0'
     PPI_API_KEY: ${ssm:/ppi/apikey}
     PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
     PPI_CLIENT_KEY: ${ssm:/ppi/authorizedClient}
