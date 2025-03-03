@@ -29,7 +29,7 @@ provider:
         - Effect: 'Allow'
           Action:
             - 'ssm:GetParameter'
-          Resource: 'arn:aws:ssm:us-east-2:*:*'
+          Resource: 'arn:aws:ssm:us-east-2:YOUR_ACCOUNT_ID:parameter/ppi'
         # Permit for dynamodb operations
         - Effect: 'Allow'
           Action:
@@ -103,14 +103,7 @@ custom:
     path: .env
     include:
       - DEV_DYNAMODB_ENDPOINT
-      - NADRO_CUSTOMER_FORM
-      - NADRO_CREDIT_BEHAVIOR
-      - NADRO_CUSTOMER_DOCUMENT
-      - TEMPLATE_EMAIL_REQUEST
-      - TEMPLATE_EMAIL_APPROVED
-      - BASE_SERVICE_URL
-      - SES_EMAIL_SOURCE
-      - SES_EMAIL_DESTINATION
+      - AWS_ACCOUNT_ID
   dynamodb:
     stages:
       - dev
