@@ -29,7 +29,7 @@ provider:
         - Effect: 'Allow'
           Action:
             - 'ssm:GetParameter'
-          Resource: 'arn:aws:ssm:us-east-2:YOUR_ACCOUNT_ID:parameter/ppi'
+          Resource: 'arn:aws:ssm:us-east-2:${env.AWS_ACCOUNT_ID}:parameter/ppi'
         # Permit for dynamodb operations
         - Effect: 'Allow'
           Action:
