@@ -12,16 +12,16 @@ provider:
     Service: 'Investment-services'
     Environment: "${opt:stage, 'dev'}"
   runtime: nodejs18.x
-  profile: fedeira
+  profile: Developer-PPI
   region: us-east-2
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
-    PPI_API_VERSION: ${ssm:/ppi/apiVersion}
-    PPI_API_KEY: ${ssm:/ppi/apiKey}
-    PPI_API_SECRET: ${ssm:/ppi/apiSecret}
-    PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
-    PPI_CLIENT_KEY: ${ssm:/ppi/clientKey}
-    PPI_ACCOUNT_NUMBER: ${ssm:/ppi/accountNumber}
+    PPI_API_VERSION: ${self:custom.variables.PPI_API_VERSION}
+    PPI_API_KEY: ${self:custom.variables.PPI_API_KEY}
+    PPI_API_SECRET: ${self:custom.variables.PPI_API_SECRET}
+    PPI_AUTHORIZED_CLIENT: ${self:custom.variables.PPI_AUTHORIZED_CLIENT}
+    PPI_CLIENT_KEY: ${self:custom.variables.PPI_CLIENT_KEY}
+    PPI_ACCOUNT_NUMBER: ${self:custom.variables.PPI_ACCOUNT_NUMBER}
   iam:
     role:
       statements:
@@ -29,7 +29,7 @@ provider:
         - Effect: 'Allow'
           Action:
             - 'ssm:GetParameter'
-          Resource: 'arn:aws:ssm:us-east-2:${env.AWS_ACCOUNT_ID}:parameter/ppi'
+          Resource: 'arn:aws:ssm:us-east-2:${env:AWS_ACCOUNT_ID}:parameter/ppi'
         # Permit for dynamodb operations
         - Effect: 'Allow'
           Action:
@@ -39,21 +39,21 @@ provider:
             - 'dynamodb:PutItem'
             - 'dynamodb:UpdateItem'
             - 'dynamodb:DeleteItem'
-          Resource: '*'
+          Resource: 'arn:aws:dynamodb:us-east-2:${env:AWS_ACCOUNT_ID}:table/CreditBehavior'
         # Permit for logs operations in cloudwatch
         - Effect: 'Allow'
           Action:
             - 'logs:CreateLogGroup'
             - 'logs:CreateLogStream'
             - 'logs:PutLogEvents'
-          Resource: 'arn:aws:logs:us-east-2:*:*'
+          Resource: "arn:aws:logs:us-east-2:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/fedeira-investment-services:*"
         # Permit for ses operations
         - Effect: 'Allow'
           Action:
             - 'ses:SendEmail'
             - 'ses:SendRawEmail'
             - 'ses:ListIdentities'
-          Resource: '*'
+          Resource: "arn:aws:ses:us-east-2:${env:AWS_ACCOUNT_ID}:identity/my-secure-domain.com"
 functions:
   ppiLogin:
     handler: investment-services/handler.getAvailableBalance
@@ -64,7 +64,7 @@ functions:
           path: investment/available-balance
           method: get
           cors:
-            origin: '*'
+            origin: 'https://my-secure-domain.com'
             headers:
               - Content-Type
             allowCredentials: true
@@ -81,9 +81,7 @@ resources:
         KeySchema:
           - AttributeName: nadroCode
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+        BillingMode: PAY_PER_REQUEST
 
   Outputs:
     DynamoDBEndpoint:
@@ -103,7 +101,17 @@ custom:
     path: .env
     include:
       - DEV_DYNAMODB_ENDPOINT
+      - PPP_API_VERSION
       - AWS_ACCOUNT_ID
+
+  variables:
+    PPI_API_VERSION: ${ssm:/ppi/apiVersion}
+    PPI_API_KEY: ${ssm:/ppi/apiKey}
+    PPI_API_SECRET: ${ssm:/ppi/apiSecret}
+    PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
+    PPI_CLIENT_KEY: ${ssm:/ppi/clientKey}
+    PPI_ACCOUNT_NUMBER: ${ssm:/ppi/accountNumber}
+
   dynamodb:
     stages:
       - dev

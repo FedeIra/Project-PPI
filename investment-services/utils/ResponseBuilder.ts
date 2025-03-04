@@ -17,3 +17,17 @@ export const buildResponse = (params: Response) => {
     }),
   };
 };
+
+// Reponse mapper for errors:
+export class ErrorHandler {
+  static handle(error: any) {
+    console.error('Error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        status: 'error',
+        message: error.message || 'Internal Server Error',
+      }),
+    };
+  }
+}

@@ -1,14 +1,30 @@
 // External Dependencies:
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
 // Internal Dependencies:
 import { PPI_BASE_URL, PPI_BASE_ACCOUNT_URL } from '../../config/constants';
 import { IPPIAccountRepository } from '../../application/interfaces/IGetAvailableBalanceRepository';
 import { PPITokenService } from '../services/PPITokenServices';
 import { AccountBalanceResponsePPI } from '../../domain/entities/account/AccountBalanceResponsePPI';
+import { logger } from '../../utils/LogBuilder';
 
 // PPI Account repository:
 export class PPIAccountRepository implements IPPIAccountRepository {
+  // Constructor with axios retry configuration:
+  constructor() {
+    axiosRetry(axios, {
+      retries: 3,
+      retryDelay: axiosRetry.exponentialDelay,
+      retryCondition: (error) => {
+        return (
+          axiosRetry.isNetworkError(error) ||
+          error.response?.status === 500 ||
+          error.response?.status === 503
+        );
+      },
+    });
+  }
   // Get investing profile service:
   async getAvailableBalance(): Promise<AccountBalanceResponsePPI[]> {
     try {
@@ -28,13 +44,13 @@ export class PPIAccountRepository implements IPPIAccountRepository {
 
       return response.data;
     } catch (error: any) {
-      throw new Error(
-        `Error trying to obtain token: ${
-          error.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message
-        }`
+      logger.error(
+        'PPIAccountRepository.getAvailableBalance: Error occurred:',
+        {
+          error,
+        }
       );
+      throw new Error(`Error getting balance: ${error.message}`);
     }
   }
 }

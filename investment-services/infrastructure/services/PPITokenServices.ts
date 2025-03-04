@@ -1,32 +1,32 @@
 // External Dependencies:
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
 // Internal Dependencies:
+import { TokenCacheService } from './TokenCacheService';
 import { PPI_BASE_URL, PPI_BASE_ACCOUNT_URL } from '../../config/constants';
 import { LoginResponsePPI } from '../../domain/entities/account/LoginResponsePPI';
+import { logger } from '../../utils/LogBuilder';
 
 // Service for PPI Token:
 export class PPITokenService {
-  private static token: string | null = null;
-  private static tokenExpiration: number | null = null;
-  private static tokenPromise: Promise<void> | null = null;
-
   public static async getToken(): Promise<string> {
-    if (
-      !PPITokenService.token ||
-      (PPITokenService.tokenExpiration &&
-        Date.now() >= PPITokenService.tokenExpiration)
-    ) {
-      if (!PPITokenService.tokenPromise) {
-        PPITokenService.tokenPromise = PPITokenService.fetchToken();
-      }
-      await PPITokenService.tokenPromise;
-      PPITokenService.tokenPromise = null;
+    if (TokenCacheService.isTokenValid()) {
+      return TokenCacheService.getToken() as string;
     }
-    return PPITokenService.token as string;
+
+    const tokenInfo: LoginResponsePPI = await this.fetchToken();
+    TokenCacheService.setToken(tokenInfo.accessToken, tokenInfo.expires);
+    return tokenInfo.accessToken;
   }
-  private static async fetchToken(): Promise<void> {
+
+  private static async fetchToken(): Promise<LoginResponsePPI> {
     try {
+      axiosRetry(axios, {
+        retries: 3,
+        retryDelay: axiosRetry.exponentialDelay,
+      });
+
       const response = await axios.post(
         `${PPI_BASE_URL.SANDBOX}${PPI_BASE_ACCOUNT_URL.ACCOUNT}LoginApi`,
         {},
@@ -40,21 +40,13 @@ export class PPITokenService {
         }
       );
 
-      const tokenInfo: LoginResponsePPI = response.data;
-
-      if (tokenInfo) {
-        PPITokenService.token = tokenInfo.accessToken;
-        PPITokenService.tokenExpiration = Date.now() + tokenInfo.expires;
-      } else {
-        throw new Error('Error trying to obtain token.');
-      }
+      return response.data;
     } catch (error: any) {
+      logger.error('PPITokenService.fetchToken: Error occurred:', {
+        error,
+      });
       throw new Error(
-        `Error trying to obtain token: ${
-          error.response?.data
-            ? JSON.stringify(error.response.data)
-            : error.message
-        }`
+        `Error getting token: ${error.response?.data || error.message}`
       );
     }
   }
