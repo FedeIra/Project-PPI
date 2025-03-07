@@ -1,19 +1,23 @@
 service: fedeira-investment-services
 frameworkVersion: '4'
 
+# Serverless plugins:
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
 
+# AWS provider configuration:
 provider:
   name: aws
+  runtime: nodejs18.x
+  profile: Developer-PPI
+  region: us-east-2
+  # Tags for better resource management in AWS:
   tags:
     Project: 'IS'
     Service: 'Investment-services'
     Environment: "${opt:stage, 'dev'}"
-  runtime: nodejs18.x
-  profile: Developer-PPI
-  region: us-east-2
+  # Environment variables available for Lambda functions:
   environment:
     IS_OFFLINE: ${opt:isOffline, 'false'}
     PPI_API_VERSION: ${self:custom.variables.PPI_API_VERSION}
@@ -22,6 +26,16 @@ provider:
     PPI_AUTHORIZED_CLIENT: ${self:custom.variables.PPI_AUTHORIZED_CLIENT}
     PPI_CLIENT_KEY: ${self:custom.variables.PPI_CLIENT_KEY}
     PPI_ACCOUNT_NUMBER: ${self:custom.variables.PPI_ACCOUNT_NUMBER}
+    INVESTMENT_TABLE: ${self:custom.variables.INVESTMENT_TABLE}
+
+  # Monitoring & Logging:
+  tracing:
+    apiGateway: false
+    lambda: false
+  logs:
+    restApi: false
+
+  # IAM role permissions for Lambda functions:
   iam:
     role:
       statements:
@@ -29,7 +43,7 @@ provider:
         - Effect: 'Allow'
           Action:
             - 'ssm:GetParameter'
-          Resource: 'arn:aws:ssm:us-east-2:${env:AWS_ACCOUNT_ID}:parameter/ppi'
+          Resource: 'arn:aws:ssm:us-east-2:${aws:accountId}:parameter/ppi' # 'arn:aws:ssm:us-east-2:${env:AWS_ACCOUNT_ID}:parameter/ppi'
         # Permit for dynamodb operations
         - Effect: 'Allow'
           Action:
@@ -39,64 +53,83 @@ provider:
             - 'dynamodb:PutItem'
             - 'dynamodb:UpdateItem'
             - 'dynamodb:DeleteItem'
-          Resource: 'arn:aws:dynamodb:us-east-2:${env:AWS_ACCOUNT_ID}:table/CreditBehavior'
+          Resource: 'arn:aws:dynamodb:us-east-2:${aws:accountId}:table/${self:provider.environment.INVESTMENT_TABLE}'
         # Permit for logs operations in cloudwatch
         - Effect: 'Allow'
           Action:
             - 'logs:CreateLogGroup'
             - 'logs:CreateLogStream'
             - 'logs:PutLogEvents'
-          Resource: "arn:aws:logs:us-east-2:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/fedeira-investment-services:*"
+          Resource: 'arn:aws:logs:us-east-2:${aws:accountId}:log-group:/aws/lambda/fedeira-investment-services:*'
         # Permit for ses operations
         - Effect: 'Allow'
           Action:
             - 'ses:SendEmail'
             - 'ses:SendRawEmail'
-            - 'ses:ListIdentities'
-          Resource: "arn:aws:ses:us-east-2:${env:AWS_ACCOUNT_ID}:identity/my-secure-domain.com"
+          Resource: 'arn:aws:ses:us-east-2:${aws:accountId}:identity/my-secure-domain.com'
+        # Permit for S3 operations
+        - Effect: 'Allow'
+          Action:
+            - 's3:ListBucket'
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource:
+            - 'arn:aws:s3:::investment-bucket'
+            - 'arn:aws:s3:::investment-bucket/*'
+# Lambda functions definitions:
 functions:
-  ppiLogin:
+  getAvailableBalance:
     handler: investment-services/handler.getAvailableBalance
-    timeout: 60
-    memorySize: 1024
+    timeout: 10
+    memorySize: 128
     events:
       - http:
           path: investment/available-balance
           method: get
-          cors:
-            origin: 'https://my-secure-domain.com'
-            headers:
-              - Content-Type
-            allowCredentials: true
-
+          cors: true
+          throttling:
+            maxRequestsPerSecond: 1
+# AWS Resources: DynamoDB Table & S3 Bucket:
 resources:
   Resources:
-    CreditBehaviorTable:
+    InvestmentRecordsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: CreditBehavior
+        TableName: ${self:custom.variables.INVESTMENT_TABLE}
         AttributeDefinitions:
-          - AttributeName: nadroCode
+          - AttributeName: investmentId
             AttributeType: S
         KeySchema:
-          - AttributeName: nadroCode
+          - AttributeName: investmentId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
+    S3InvestmentBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: investment-bucket
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
 
   Outputs:
     DynamoDBEndpoint:
       Description: 'DynamoDB Host Endpoint'
       Value: !Sub 'https://dynamodb.${AWS::Region}.amazonaws.com'
 
+# Custom configurations:
 custom:
   esbuild:
     bundle: true
     minify: false
-    sourcemap: true
+    sourcemap: false
     target: node20
     platform: node
     exclude: ['aws-sdk']
 
+  # Load environment variables from .env file:
   dotenv:
     path: .env
     include:
@@ -104,6 +137,7 @@ custom:
       - PPP_API_VERSION
       - AWS_ACCOUNT_ID
 
+  # Custom variables used throughout the configuration:
   variables:
     PPI_API_VERSION: ${ssm:/ppi/apiVersion}
     PPI_API_KEY: ${ssm:/ppi/apiKey}
@@ -111,7 +145,9 @@ custom:
     PPI_AUTHORIZED_CLIENT: ${ssm:/ppi/authorizedClient}
     PPI_CLIENT_KEY: ${ssm:/ppi/clientKey}
     PPI_ACCOUNT_NUMBER: ${ssm:/ppi/accountNumber}
+    INVESTMENT_TABLE: InvestmentRecords
 
+  # DynamoDB local settings for offline development:
   dynamodb:
     stages:
       - dev
