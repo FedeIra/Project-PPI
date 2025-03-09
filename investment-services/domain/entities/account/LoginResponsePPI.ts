@@ -1,4 +1,4 @@
-// PPI Login response:
+// PPI Login and Refresh token response:
 export interface LoginResponsePPI {
   creationDate: string;
   expirationDate: string;

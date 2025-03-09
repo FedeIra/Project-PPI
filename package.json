@@ -20,6 +20,7 @@
     "pino-pretty": "^13.0.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
     "@types/node": "^22.13.5",
     "dotenv": "^16.4.7",
     "eslint": "^8.57.1",

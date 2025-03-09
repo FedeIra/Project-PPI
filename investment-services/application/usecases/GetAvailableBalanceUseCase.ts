@@ -4,13 +4,9 @@ import { AccountBalanceResponsePPI } from '../../domain/entities/account/Account
 
 // Get available balance use case:
 export class GetAvailableBalanceUseCase {
-  private repository: IPPIAccountRepository;
+  constructor(private repository: IPPIAccountRepository) {}
 
-  constructor(repository: IPPIAccountRepository) {
-    this.repository = repository;
-  }
-
-  async execute(): Promise<AccountBalanceResponsePPI[]> {
-    return await this.repository.getAvailableBalance();
+  execute(): Promise<AccountBalanceResponsePPI[]> {
+    return this.repository.getAvailableBalance();
   }
 }

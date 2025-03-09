@@ -28,8 +28,10 @@ export class PPIAccountRepository implements IPPIAccountRepository {
   // Get investing profile service:
   async getAvailableBalance(): Promise<AccountBalanceResponsePPI[]> {
     try {
+      // Get PPI token:
       const token: string = await PPITokenService.getToken();
 
+      // Get available balance:
       const response = await axios.get(
         `${PPI_BASE_URL.SANDBOX}${PPI_BASE_ACCOUNT_URL.ACCOUNT}AvailableBalance?accountNumber=${process.env.PPI_ACCOUNT_NUMBER}`,
         {
@@ -42,7 +44,10 @@ export class PPIAccountRepository implements IPPIAccountRepository {
         }
       );
 
-      return response.data;
+      const ppiAccountBalanceResponse: AccountBalanceResponsePPI[] =
+        response.data;
+
+      return ppiAccountBalanceResponse;
     } catch (error: any) {
       logger.error(
         'PPIAccountRepository.getAvailableBalance: Error occurred:',

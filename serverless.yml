@@ -80,15 +80,13 @@ provider:
 functions:
   getAvailableBalance:
     handler: investment-services/handler.getAvailableBalance
-    timeout: 10
-    memorySize: 128
+    timeout: 30
+    memorySize: 256
     events:
       - http:
           path: investment/available-balance
           method: get
           cors: true
-          throttling:
-            maxRequestsPerSecond: 1
 # AWS Resources: DynamoDB Table & S3 Bucket:
 resources:
   Resources:
@@ -128,6 +126,10 @@ custom:
     target: node20
     platform: node
     exclude: ['aws-sdk']
+
+  # No timeout for serverless-offline plugin:
+  serverless-offline:
+    noTimeout: true
 
   # Load environment variables from .env file:
   dotenv:
