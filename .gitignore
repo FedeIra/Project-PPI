@@ -7,4 +7,3 @@
 **/yarn.lock
 **/package-lock.json
 **/.env
-**/token_cache.json
