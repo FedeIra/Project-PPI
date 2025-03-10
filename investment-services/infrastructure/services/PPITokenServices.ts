@@ -1,18 +1,12 @@
-// External Dependencies:
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
-
 // Internal Dependencies:
 import { TokenCacheService } from './PPITokenCacheService';
-import { PPI_BASE_URL, PPI_BASE_ACCOUNT_URL } from '../../config/constants';
 import { LoginResponsePPI } from '../../domain/entities/account/LoginResponsePPI';
 import { logger } from '../../utils/LogBuilder';
+import { axiosConfiguration } from '../../config/axiosConfiguration';
+import { CONFIG } from '../../config/constants';
 
-// Retry configuration:
-axiosRetry(axios, {
-  retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
-});
+// External Dependencies:
+import axios from 'axios';
 
 // Service for PPI Token:
 export class PPITokenService {
@@ -41,52 +35,67 @@ export class PPITokenService {
   }
 
   // Refresh PPI token:
-  private static async refreshToken(): Promise<string> {
+  private static async refreshToken(): Promise<string | any> {
     try {
+      // get tokens from cache
       const refreshToken: string | null = TokenCacheService.getRefreshToken();
+      const previousToken: string | null = TokenCacheService.getToken();
 
-      if (!refreshToken) {
+      if (!refreshToken || !previousToken) {
         return await this.requestNewToken();
       }
 
       // Refresh PPI token:
-      const response = await axios.post(
-        `${PPI_BASE_URL.SANDBOX}${PPI_BASE_ACCOUNT_URL.ACCOUNT}RefreshToken`,
+      const response = await axiosConfiguration.post(
+        `${CONFIG.PPI.BASE_URL}/Account/RefreshToken`,
         { refreshToken },
         {
           headers: {
-            AuthorizedClient: process.env.PPI_AUTHORIZED_CLIENT!,
-            ClientKey: process.env.PPI_CLIENT_KEY!,
+            Authorization: `Bearer ${refreshToken}`,
+            AuthorizedClient: CONFIG.PPI.AUTHORIZED_CLIENT,
+            ClientKey: CONFIG.PPI.CLIENT_KEY,
             'Content-Type': 'application/json',
           },
         }
       );
-
       const tokenInfo: LoginResponsePPI = response.data;
+
       // Store token in cache:
       this.storeToken(tokenInfo);
       return tokenInfo.accessToken;
-    } catch (error: any) {
-      logger.error('Error refreshing token, requesting new token.', { error });
-      return await this.requestNewToken();
+    } catch (error) {
+      logger.error('PPITokenService.refreshToken: Error occurred:', {
+        error,
+      });
+      return this.requestNewToken();
     }
   }
 
   // Fetch token from PPI:
   private static async fetchToken(): Promise<LoginResponsePPI> {
     try {
+      console.info(
+        'Fetching new token from PPI',
+        CONFIG.PPI.BASE_URL,
+        CONFIG.PPI.AUTHORIZED_CLIENT,
+        CONFIG.PPI.CLIENT_KEY,
+        CONFIG.PPI.API_KEY,
+        CONFIG.PPI.API_SECRET
+      );
       const response = await axios.post(
-        `${PPI_BASE_URL.SANDBOX}${PPI_BASE_ACCOUNT_URL.ACCOUNT}LoginApi`,
+        `${CONFIG.PPI.BASE_URL}/Account/LoginApi`,
         {},
         {
           headers: {
-            AuthorizedClient: process.env.PPI_AUTHORIZED_CLIENT!,
-            ClientKey: process.env.PPI_CLIENT_KEY!,
-            ApiKey: process.env.PPI_API_KEY!,
-            ApiSecret: process.env.PPI_API_SECRET!,
+            AuthorizedClient: CONFIG.PPI.AUTHORIZED_CLIENT,
+            ClientKey: CONFIG.PPI.CLIENT_KEY,
+            ApiKey: CONFIG.PPI.API_KEY,
+            ApiSecret: CONFIG.PPI.API_SECRET,
           },
         }
       );
+
+      console.log('🚀 ~ PPITokenService ~ fetchToken ~ tokenInfo:', response);
 
       const tokenInfo: LoginResponsePPI = response.data;
 

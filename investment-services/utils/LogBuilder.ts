@@ -1,14 +1,18 @@
+// External Dependencies:
 import pino from 'pino';
 
+// Internal Dependencies:
+import { CONFIG } from '../config/constants';
+
 export const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
+  level: 'info',
   formatters: {
     level(label) {
       return { level: label };
     },
   },
   transport:
-    process.env.NODE_ENV === 'development'
+    CONFIG.ENV === 'development'
       ? {
           target: 'pino-pretty',
           options: {

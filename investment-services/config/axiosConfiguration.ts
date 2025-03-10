@@ -4,12 +4,15 @@ import axiosRetry from 'axios-retry';
 axiosRetry(axios, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
+  shouldResetTimeout: true,
   retryCondition: (error) => {
     return (
       axiosRetry.isNetworkError(error) ||
-      [500, 503].includes(error.response?.status)
+      [500, 502, 503, 504].includes(error.response?.status ?? 0)
     );
   },
 });
 
-export default axios;
+axios.defaults.timeout = 5000;
+
+export const axiosConfiguration = axios;

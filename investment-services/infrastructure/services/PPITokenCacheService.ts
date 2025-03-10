@@ -1,9 +1,7 @@
 // External Dependencies:
 import fs from 'fs';
 
-// Internal Dependencies:
-import { logger } from '../../utils/LogBuilder';
-
+// Token cache service:
 export class TokenCacheService {
   private static token: string | null = null;
   private static tokenExpiration: number | null = null;

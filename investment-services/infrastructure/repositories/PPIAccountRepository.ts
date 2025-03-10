@@ -1,30 +1,13 @@
-// External Dependencies:
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
-
 // Internal Dependencies:
-import { PPI_BASE_URL, PPI_BASE_ACCOUNT_URL } from '../../config/constants';
 import { IPPIAccountRepository } from '../../application/interfaces/IGetAvailableBalanceRepository';
 import { PPITokenService } from '../services/PPITokenServices';
 import { AccountBalanceResponsePPI } from '../../domain/entities/account/AccountBalanceResponsePPI';
 import { logger } from '../../utils/LogBuilder';
+import { axiosConfiguration } from '../../config/axiosConfiguration';
+import { CONFIG } from '../../config/constants';
 
 // PPI Account repository:
 export class PPIAccountRepository implements IPPIAccountRepository {
-  // Constructor with axios retry configuration:
-  constructor() {
-    axiosRetry(axios, {
-      retries: 3,
-      retryDelay: axiosRetry.exponentialDelay,
-      retryCondition: (error) => {
-        return (
-          axiosRetry.isNetworkError(error) ||
-          error.response?.status === 500 ||
-          error.response?.status === 503
-        );
-      },
-    });
-  }
   // Get investing profile service:
   async getAvailableBalance(): Promise<AccountBalanceResponsePPI[]> {
     try {
@@ -32,12 +15,12 @@ export class PPIAccountRepository implements IPPIAccountRepository {
       const token: string = await PPITokenService.getToken();
 
       // Get available balance:
-      const response = await axios.get(
-        `${PPI_BASE_URL.SANDBOX}${PPI_BASE_ACCOUNT_URL.ACCOUNT}AvailableBalance?accountNumber=${process.env.PPI_ACCOUNT_NUMBER}`,
+      const response = await axiosConfiguration.get(
+        `${CONFIG.PPI.BASE_URL}/Account/AvailableBalance?accountNumber=${CONFIG.PPI.ACCOUNT_NUMBER}`,
         {
           headers: {
-            AuthorizedClient: process.env.PPI_AUTHORIZED_CLIENT,
-            ClientKey: process.env.PPI_CLIENT_KEY,
+            AuthorizedClient: CONFIG.PPI.AUTHORIZED_CLIENT,
+            ClientKey: CONFIG.PPI.CLIENT_KEY,
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },

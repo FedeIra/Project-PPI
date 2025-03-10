@@ -4,7 +4,6 @@ import { APIGatewayEvent } from 'aws-lambda';
 // Internal Dependencies:
 import { buildResponse, ErrorHandler } from '../../utils/ResponseBuilder';
 import { GetAvailableBalanceUseCase } from '../../application/usecases/GetAvailableBalanceUseCase';
-import { PPIAccountRepository } from '../repositories/PPIAccountRepository';
 import { AccountBalanceResponsePPI } from '../../domain/entities/account/AccountBalanceResponsePPI';
 import { IPPIAccountRepository } from '../../application/interfaces/IGetAvailableBalanceRepository';
 import { logger } from '../../utils/LogBuilder';
@@ -20,8 +19,6 @@ export class GetAvailableBalanceController {
   }
 
   async handle(event: APIGatewayEvent) {
-    // Instantiate use cases and repositories:
-
     try {
       // Get PPI account balance:
       const data: AccountBalanceResponsePPI[] =
