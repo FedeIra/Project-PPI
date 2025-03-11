@@ -111,22 +111,23 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
-    S3InvestmentBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: investment-fedeira-bucket
-        PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-        BucketEncryption:
-          ServerSideEncryptionConfiguration:
-            - ServerSideEncryptionByDefault:
-                SSEAlgorithm: AES256
-        Tags:
-          - Key: 'Environment'
-            Value: 'dev'
+  # Bucket creation
+  S3InvestmentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: investment-fedeira-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: 'Environment'
+          Value: 'dev'
 
   Outputs:
     DynamoDBEndpoint:
