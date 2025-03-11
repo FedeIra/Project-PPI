@@ -2,7 +2,6 @@
 import { IPPIAccountRepository } from '../../application/interfaces/IGetAvailableBalanceRepository';
 import { PPITokenService } from '../services/PPITokenServices';
 import { AccountBalanceResponsePPI } from '../../domain/entities/account/AccountBalanceResponsePPI';
-import { logger } from '../../utils/LogBuilder';
 import { axiosConfiguration } from '../../config/axiosConfiguration';
 import { CONFIG } from '../../config/constants';
 
@@ -32,12 +31,6 @@ export class PPIAccountRepository implements IPPIAccountRepository {
 
       return ppiAccountBalanceResponse;
     } catch (error: any) {
-      logger.error(
-        'PPIAccountRepository.getAvailableBalance: Error occurred:',
-        {
-          error,
-        }
-      );
       throw new Error(`Error getting balance: ${error.message}`);
     }
   }

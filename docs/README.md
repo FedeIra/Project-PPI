@@ -107,4 +107,3 @@ AWS DynamoDB
 AWS S3
 AWS Systems Manager (SSM)
 Serverless Offline
-Pino Logging

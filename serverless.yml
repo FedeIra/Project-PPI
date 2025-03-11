@@ -12,6 +12,8 @@ provider:
   runtime: nodejs18.x
   profile: Developer-PPI
   region: us-east-2
+  deploymentBucket:
+    name: serverless-deployment-bucket
   # Tags for better resource management in AWS:
   tags:
     Project: 'IS'
@@ -154,3 +156,11 @@ custom:
       inMemory: true
       seed: true
       convertEmptyValues: true
+
+  # Packaging settings:
+  package:
+    individually: true
+    include:
+      - investment-services/**
+      - node_modules/**
+      - dist/**

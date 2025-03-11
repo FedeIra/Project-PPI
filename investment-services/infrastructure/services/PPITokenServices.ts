@@ -1,7 +1,6 @@
 // Internal Dependencies:
 import { TokenCacheService } from './PPITokenCacheService';
 import { LoginResponsePPI } from '../../domain/entities/account/LoginResponsePPI';
-import { logger } from '../../utils/LogBuilder';
 import { axiosConfiguration } from '../../config/axiosConfiguration';
 import { CONFIG } from '../../config/constants';
 
@@ -64,9 +63,6 @@ export class PPITokenService {
       this.storeToken(tokenInfo);
       return tokenInfo.accessToken;
     } catch (error) {
-      logger.error('PPITokenService.refreshToken: Error occurred:', {
-        error,
-      });
       return this.requestNewToken();
     }
   }
@@ -74,14 +70,6 @@ export class PPITokenService {
   // Fetch token from PPI:
   private static async fetchToken(): Promise<LoginResponsePPI> {
     try {
-      console.info(
-        'Fetching new token from PPI',
-        CONFIG.PPI.BASE_URL,
-        CONFIG.PPI.AUTHORIZED_CLIENT,
-        CONFIG.PPI.CLIENT_KEY,
-        CONFIG.PPI.API_KEY,
-        CONFIG.PPI.API_SECRET
-      );
       const response = await axios.post(
         `${CONFIG.PPI.BASE_URL}/Account/LoginApi`,
         {},
@@ -95,15 +83,10 @@ export class PPITokenService {
         }
       );
 
-      console.log('🚀 ~ PPITokenService ~ fetchToken ~ tokenInfo:', response);
-
       const tokenInfo: LoginResponsePPI = response.data;
 
       return tokenInfo;
     } catch (error: any) {
-      logger.error('PPITokenService.fetchToken: Error occurred:', {
-        error,
-      });
       throw new Error(
         `Error getting token: ${error.response?.data || error.message}`
       );

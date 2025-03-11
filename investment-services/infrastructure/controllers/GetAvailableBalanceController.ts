@@ -6,7 +6,6 @@ import { buildResponse, ErrorHandler } from '../../utils/ResponseBuilder';
 import { GetAvailableBalanceUseCase } from '../../application/usecases/GetAvailableBalanceUseCase';
 import { AccountBalanceResponsePPI } from '../../domain/entities/account/AccountBalanceResponsePPI';
 import { IPPIAccountRepository } from '../../application/interfaces/IGetAvailableBalanceRepository';
-import { logger } from '../../utils/LogBuilder';
 
 // Get available balance controller:
 export class GetAvailableBalanceController {
@@ -40,9 +39,6 @@ export class GetAvailableBalanceController {
         data: balance,
       });
     } catch (error) {
-      logger.error('GetAvailableBalanceController.handle: Error occurred:', {
-        error,
-      });
       return ErrorHandler.handle(error);
     }
   }
