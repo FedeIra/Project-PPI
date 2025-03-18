@@ -13,6 +13,6 @@ axiosRetry(axios, {
   },
 });
 
-axios.defaults.timeout = 5000;
+axios.defaults.timeout = 15000;
 
 export const axiosConfiguration = axios;
