@@ -11,12 +11,12 @@ import axios from 'axios';
 export class PPITokenService {
   // Get PPI token:
   public static async getToken(): Promise<string> {
-    if (TokenCacheService.isTokenValid()) {
-      return TokenCacheService.getToken() as string;
+    if (await TokenCacheService.isTokenValid()) {
+      return (await TokenCacheService.getToken()) as string;
     }
 
     // Refresh token:
-    if (TokenCacheService.getRefreshToken()) {
+    if (await TokenCacheService.getRefreshToken()) {
       return await this.refreshToken();
     }
 
@@ -34,11 +34,12 @@ export class PPITokenService {
   }
 
   // Refresh PPI token:
-  private static async refreshToken(): Promise<string | any> {
+  private static async refreshToken(): Promise<string> {
     try {
       // get tokens from cache
-      const refreshToken: string | null = TokenCacheService.getRefreshToken();
-      const previousToken: string | null = TokenCacheService.getToken();
+      const refreshToken: string | null =
+        await TokenCacheService.getRefreshToken();
+      const previousToken: string | null = await TokenCacheService.getToken();
 
       if (!refreshToken || !previousToken) {
         return await this.requestNewToken();
@@ -94,10 +95,10 @@ export class PPITokenService {
   }
 
   // Store token in cache:
-  private static storeToken(tokenInfo: LoginResponsePPI) {
+  private static async storeToken(tokenInfo: LoginResponsePPI) {
     const expirationTimeMs: number = tokenInfo.expires * 1000;
 
-    TokenCacheService.setToken(tokenInfo.accessToken, expirationTimeMs);
-    TokenCacheService.setRefreshToken(tokenInfo.refreshToken);
+    await TokenCacheService.setToken(tokenInfo.accessToken, expirationTimeMs);
+    await TokenCacheService.setRefreshToken(tokenInfo.refreshToken);
   }
 }

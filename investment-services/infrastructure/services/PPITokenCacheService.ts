@@ -1,33 +1,28 @@
 // External Dependencies:
-import fs from 'fs';
+import AWS from 'aws-sdk';
 
 // Token cache service:
+
+const ssm = new AWS.SSM();
 export class TokenCacheService {
   private static token: string | null = null;
   private static tokenExpiration: number | null = null;
   private static refreshToken: string | null = null;
   private static cacheFilePath = './token_cache.json';
 
-  // Check token is cached and not expired:
-  static isTokenValid(): boolean {
+  // Check token from memory or cache:
+  static async isTokenValid(): Promise<boolean> {
     // Cached token:
     if (!this.token || !this.tokenExpiration) {
-      return this.loadTokenFromFile();
+      await this.loadTokenFromSSM();
     }
-
-    // Expiration token:
-    const remainingTime: number = this.tokenExpiration - Date.now();
-    if (remainingTime <= 0) {
-      return false;
-    }
-
-    return true;
+    return (this.tokenExpiration ?? 0) > Date.now();
   }
 
-  // Get token from memory or cache:
-  static getToken(): string | null {
+  // Save token in memory and SSM:
+  static async getToken(): Promise<string | null> {
     if (!this.token) {
-      this.loadTokenFromFile();
+      await this.loadTokenFromSSM();
     }
     return this.token;
   }
@@ -36,49 +31,58 @@ export class TokenCacheService {
   static setToken(token: string, expiresInMs: number) {
     this.token = token;
     this.tokenExpiration = Date.now() + (expiresInMs ?? 0);
-    this.saveTokenToFile();
+    this.saveTokenToSSM();
   }
 
   // Get refresh token from memory or cache:
-  static getRefreshToken(): string | null {
+  static async getRefreshToken(): Promise<string | null> {
     if (!this.refreshToken) {
-      this.loadTokenFromFile();
+      await this.loadTokenFromSSM();
     }
     return this.refreshToken;
   }
 
-  // Set refresh token in cache:
-  static setRefreshToken(refreshToken: string) {
+  // Set refresh token in cache and SSM:
+  static async setRefreshToken(refreshToken: string) {
     this.refreshToken = refreshToken;
-    this.saveTokenToFile();
+    await this.saveTokenToSSM();
   }
 
-  // Store token in cache:
-  private static saveTokenToFile() {
-    fs.writeFileSync(
-      this.cacheFilePath,
-      JSON.stringify({
-        token: this.token,
-        expiration: this.tokenExpiration,
-        refreshToken: this.refreshToken,
-      })
-    );
-  }
-
-  // Get cache token from file:
-  private static loadTokenFromFile(): boolean {
+  // Load token and refresh token from SSM:
+  private static async loadTokenFromSSM() {
     try {
-      if (fs.existsSync(this.cacheFilePath)) {
-        const data = fs.readFileSync(this.cacheFilePath, 'utf-8');
-        const parsed = JSON.parse(data);
+      const result = await ssm
+        .getParameter({ Name: '/ppi/token', WithDecryption: true })
+        .promise();
+
+      if (result.Parameter?.Value) {
+        const parsed = JSON.parse(result.Parameter.Value);
         this.token = parsed.token;
         this.tokenExpiration = parsed.expiration;
         this.refreshToken = parsed.refreshToken;
-        return (this.tokenExpiration ?? 0) > Date.now();
       }
     } catch (error) {
-      console.error('Error loading cached token:', error);
+      console.error(' Error loading token from SSM:', error);
     }
-    return false;
+  }
+
+  // Store token and refresh token in SSM:
+  private static async saveTokenToSSM() {
+    try {
+      await ssm
+        .putParameter({
+          Name: '/ppi/token',
+          Value: JSON.stringify({
+            token: this.token,
+            expiration: this.tokenExpiration,
+            refreshToken: this.refreshToken,
+          }),
+          Type: 'SecureString',
+          Overwrite: true,
+        })
+        .promise();
+    } catch (error) {
+      console.error('Error saving token to SSM:', error);
+    }
   }
 }
