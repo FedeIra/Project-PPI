@@ -17,6 +17,6 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["nadro-credit/**/*"],
+  "include": ["investment-services/**/*"],
   "exclude": ["node_modules", "dist"]
 }
