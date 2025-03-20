@@ -5,12 +5,13 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { GetAvailableBalanceController } from './infrastructure/controllers/GetAvailableBalanceController';
 import { PPIAccountRepository } from './infrastructure/repositories/PPIAccountRepository';
 
-// All handlers:
+// All dependencies:
 const accountRepository = new PPIAccountRepository();
 const getAvailableBalanceController = new GetAvailableBalanceController(
   accountRepository
 );
 
+// All handlers:
 export const getAvailableBalance = async (event: APIGatewayEvent) => {
   return getAvailableBalanceController.handle(event);
 };

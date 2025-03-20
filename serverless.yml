@@ -109,6 +109,9 @@ functions:
           path: investment/available-balance
           method: get
           cors: true
+          authorizer:
+            name: authorize
+            type: TOKEN
 # AWS Resources: DynamoDB Table & S3 Bucket:
 resources:
   Resources:
@@ -194,6 +197,7 @@ custom:
   package:
     individually: true
     include:
+      - authorization-services/**
       - investment-services/**
       - node_modules/**
       - dist/**

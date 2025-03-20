@@ -8,6 +8,7 @@ import {
 import { JwtService } from '../../infrastructure/JwtService';
 import { AuthPolicy } from '../domain/AuthPolicy';
 
+// Authorizer use case:
 export class AuthorizerUseCase {
   private jwtService: JwtService;
 
@@ -25,8 +26,10 @@ export class AuthorizerUseCase {
     const token = event.authorizationToken.replace('Bearer ', '');
 
     try {
+      // Verify token:
       this.jwtService.verifyToken(token);
 
+      // Generate policy:
       return AuthPolicy.generatePolicy('user', 'Allow', event.methodArn);
     } catch (error) {
       return AuthPolicy.generatePolicy('user', 'Deny', event.methodArn);

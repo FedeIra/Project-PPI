@@ -1,6 +1,7 @@
 // External Dependencies:
 import { APIGatewayAuthorizerResult } from 'aws-lambda';
 
+// Generate policy for API Gateway authorizer:
 export class AuthPolicy {
   static generatePolicy(
     principalId: string,
