@@ -11,7 +11,7 @@ const getAvailableBalanceController = new GetAvailableBalanceController(
   accountRepository
 );
 
-// All handlers:
+// Get Balance handler:
 export const getAvailableBalance = async (event: APIGatewayEvent) => {
   return getAvailableBalanceController.handle(event);
 };
