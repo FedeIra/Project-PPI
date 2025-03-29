@@ -5,16 +5,12 @@ import {
 } from 'aws-lambda';
 
 // Internal Dependencies:
-import { JwtService } from '../../infrastructure/JwtService';
-import { AuthPolicy } from '../domain/AuthPolicy';
+import { ITokenService } from '../../application/interfaces/ITokenService';
+import { AuthPolicy } from '../../infrastructure/auth/AuthPolicy';
 
 // Authorizer use case:
 export class AuthorizerUseCase {
-  private jwtService: JwtService;
-
-  constructor(jwtService: JwtService) {
-    this.jwtService = jwtService;
-  }
+  constructor(private readonly tokenService: ITokenService) {}
 
   async execute(
     event: APIGatewayTokenAuthorizerEvent
@@ -27,7 +23,7 @@ export class AuthorizerUseCase {
 
     try {
       // Verify token:
-      this.jwtService.verifyToken(token);
+      this.tokenService.verifyToken(token);
 
       // Generate policy:
       return AuthPolicy.generatePolicy('user', 'Allow', event.methodArn);

@@ -1,12 +1,24 @@
 // Internal Dependencies:
-import { JwtService } from '../../infrastructure/JwtService';
+import { IUserRepository } from '../interfaces/IUserRepository';
+import { ITokenService } from '../interfaces/ITokenService';
 
-// Get available balance use case:
+// Login use case:
 export class LoginUseCase {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly tokenService: ITokenService
+  ) {}
 
   async execute(email: string, password: string): Promise<string> {
-    const token: string = this.jwtService.generateToken(email, password);
-    return token;
+    const isValid = await this.userRepository.validateCredentials(
+      email,
+      password
+    );
+
+    if (!isValid) {
+      throw new Error('Invalid credentials');
+    }
+
+    return this.tokenService.generateToken(email);
   }
 }

@@ -6,14 +6,22 @@ import {
 } from 'aws-lambda';
 
 // Internal Dependencies:
+import { JwtService } from './infrastructure/services/JwtService';
+import { HardcodedUserRepository } from './infrastructure/repositories/HardcodedUserRepository';
+import { LoginUseCase } from './application/usecases/LoginUseCase';
 import { AuthorizerUseCase } from './application/usecases/AuthorizerUseCase';
-import { JwtService } from './infrastructure/JwtService';
 import { LoginController } from './infrastructure/controllers/LoginController';
 
-// All dependencies:
-const jwtService = new JwtService();
-const authorizerUseCase = new AuthorizerUseCase(jwtService);
-const loginController = new LoginController();
+// Wiring dependencies:
+const tokenService = new JwtService();
+
+// Authorizer Use Case
+const authorizerUseCase = new AuthorizerUseCase(tokenService);
+
+// Login Controller
+const userRepository = new HardcodedUserRepository();
+const loginUseCase = new LoginUseCase(userRepository, tokenService);
+const loginController = new LoginController(loginUseCase);
 
 // Authorizer Handler:
 export const authorizer = async (

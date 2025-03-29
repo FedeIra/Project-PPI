@@ -1,18 +1,12 @@
 // External Dependencies:
 import { APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { JwtService } from '../../infrastructure/JwtService';
-import { LoginUseCase } from '../../application/usecases/LoginUseCase';
 
 // Internal Dependencies:
+import { LoginUseCase } from '../../application/usecases/LoginUseCase';
 
-// Get available balance controller:
+// Login controller:
 export class LoginController {
-  private loginUseCase: LoginUseCase;
-
-  constructor() {
-    const jwtService = new JwtService();
-    this.loginUseCase = new LoginUseCase(jwtService);
-  }
+  constructor(private readonly loginUseCase: LoginUseCase) {}
 
   async handle(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
     try {
@@ -26,7 +20,7 @@ export class LoginController {
         };
       }
 
-      const token: string = await this.loginUseCase.execute(email, password);
+      const token = await this.loginUseCase.execute(email, password);
 
       return {
         statusCode: 200,

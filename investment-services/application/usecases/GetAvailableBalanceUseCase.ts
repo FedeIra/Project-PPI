@@ -6,7 +6,14 @@ import { AccountBalanceResponsePPI } from '../../domain/entities/account/Account
 export class GetAvailableBalanceUseCase {
   constructor(private repository: IPPIAccountRepository) {}
 
-  execute(): Promise<AccountBalanceResponsePPI[]> {
-    return this.repository.getAvailableBalance();
+  async execute(): Promise<AccountBalanceResponsePPI[]> {
+    const balances = await this.repository.getAvailableBalance();
+
+    // Filter positive balances:
+    const positiveBalance = balances.filter(
+      (accountBalance) => accountBalance.amount > 0
+    );
+
+    return positiveBalance;
   }
 }

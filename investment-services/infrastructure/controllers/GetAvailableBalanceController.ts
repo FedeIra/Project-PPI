@@ -23,20 +23,10 @@ export class GetAvailableBalanceController {
       const data: AccountBalanceResponsePPI[] =
         await this.getAvailableBalanceUseCase.execute();
 
-      // If no results:
-      if (!data.length) {
-        return buildResponse({ status: 'success', codeStatus: 200, data: [] });
-      }
-
-      // Filter positive balances:
-      const balance: AccountBalanceResponsePPI[] = data.filter(
-        (balance) => balance.amount > 0
-      );
-
       return buildResponse({
         status: 'success',
         codeStatus: 200,
-        data: balance,
+        data,
       });
     } catch (error) {
       return ErrorHandler.handle(error);
