@@ -8,7 +8,6 @@ export class TokenCacheService {
   private static token: string | null = null;
   private static tokenExpiration: number | null = null;
   private static refreshToken: string | null = null;
-  private static cacheFilePath = './token_cache.json';
 
   // Check token from memory or cache:
   static async isTokenValid(): Promise<boolean> {

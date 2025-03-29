@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="Vdi4ofhjB4CxRGsWaWzr" name="architecture v1">
-        <mxGraphModel dx="1709" dy="556" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="1585" dy="971" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -59,6 +59,9 @@
                 <mxCell id="106" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;" parent="1" source="107" target="118" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
+                <mxCell id="123" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=3;" edge="1" parent="1" source="107" target="122">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
                 <mxCell id="107" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-api&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="293" y="874" width="121" height="30" as="geometry"/>
                 </mxCell>
@@ -76,8 +79,8 @@
                 <mxCell id="111" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#7AA116;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.bucket;" parent="1" vertex="1">
                     <mxGeometry x="308.25" y="600" width="75" height="78" as="geometry"/>
                 </mxCell>
-                <mxCell id="112" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;bucket investment&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="270" y="570" width="151.5" height="30" as="geometry"/>
+                <mxCell id="112" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-fedeira-&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-size: 15px; font-weight: 700;&quot;&gt;bucket&amp;nbsp;&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="559" width="151.5" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="113" value="Amazon DynamoDB" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.dynamodb;" parent="1" vertex="1">
                     <mxGeometry x="497.75" y="600" width="55" height="86" as="geometry"/>
@@ -97,18 +100,21 @@
                 <mxCell id="118" value="Amazon CloudWatch" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.cloudwatch;" parent="1" vertex="1">
                     <mxGeometry x="313.5" y="960" width="80" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="119" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="1">
+                <mxCell id="119" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" parent="1" vertex="1">
                     <mxGeometry x="101" y="962" width="78" height="78" as="geometry"/>
                 </mxCell>
-                <mxCell id="120" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=3;" edge="1" parent="1" source="105" target="119">
+                <mxCell id="120" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=3;" parent="1" source="105" target="119" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="-46" y="1001"/>
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="121" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-api-auth&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="121" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-api-auth&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="63.75" y="1040" width="152.5" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="122" value="AWS Systems Manager" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.systems_manager;" vertex="1" parent="1">
+                    <mxGeometry x="491" y="962" width="80" height="110" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

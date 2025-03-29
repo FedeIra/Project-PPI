@@ -35,6 +35,9 @@ provider:
     ACCOUNT_NUMBER_PPI: ${env:ACCOUNT_NUMBER_PPI}
     INVESTMENT_TABLE: ${self:custom.variables.INVESTMENT_TABLE}
     BASE_URL_PPI_TEST: ${env:BASE_URL_PPI_TEST}
+    JWT_SECRET: ${env:JWT_SECRET}
+    USER_EMAIL: ${env:USER_EMAIL}
+    USER_PASSWORD: ${env:USER_PASSWORD}
 
   # Monitoring & Logging:
   tracing:
@@ -93,6 +96,23 @@ provider:
             - 'arn:aws:s3:::investment-fedeira-bucket/*'
 # Lambda functions definitions:
 functions:
+  #  Authorizer lambda:
+  authorize:
+    handler: authorization-services/handler.authorizer
+    timeout: 10
+    memorySize: 1028
+
+  # Login:
+  login:
+    handler: authorization-services/handler.login
+    timeout: 29
+    memorySize: 1028
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+
   getAvailableBalance:
     handler: investment-services/handler.getAvailableBalance
     timeout: 29
@@ -102,6 +122,9 @@ functions:
           path: investment/available-balance
           method: get
           cors: true
+          authorizer:
+            name: authorize
+            type: TOKEN
 # AWS Resources: DynamoDB Table & S3 Bucket:
 resources:
   Resources:
@@ -161,6 +184,9 @@ custom:
       - API_SECRET_PPI_TEST
       - CLIENT_KEY_PPI_TEST
       - BASE_URL_PPI_TEST
+      - JWT_SECRET
+      - USER_EMAIL
+      - USER_PASSWORD
 
   # Custom variables used throughout the configuration:
   variables:
@@ -186,6 +212,7 @@ custom:
   package:
     individually: true
     include:
+      - authorization-services/**
       - investment-services/**
       - node_modules/**
       - dist/**

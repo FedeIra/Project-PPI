@@ -1,6 +1,6 @@
 # Fedeira Investment Services
 
-A serverless project for investment services using PPI API's, AWS Lambda, DynamoDB, and S3.
+A serverless backend for investment services using PPI API's, AWS Lambda, DynamoDB, and S3.
 
 ## 🚀 Getting Started
 
@@ -8,22 +8,24 @@ This guide provides instructions on how to run the project both locally (for tes
 
 ## 📌 Prerequisites
 
-Make sure you have the following installed:
+Ensure you have the following installed:
 
-Node.js (>= 18.x)
-npm (or yarn)
-AWS CLI (configured with your AWS credentials)
-Serverless Framework (npm install -g serverless)
-Docker (for local DynamoDB)
-Node.js & TypeScript
+- **Node.js** v18.x or later
+- **npm** (or **yarn**)
+- **AWS CLI** (with configured credentials)
+- **Serverless Framework** (`npm install -g serverless`)
+- **Docker** (for local DynamoDB)
+- **TypeScript** (`npm install -D typescript`)
 
 ## 🏗 Installation
 
 Clone the repository and install dependencies:
 
+```bash
 git clone https://github.com/your-repo/fedeira-investment-services.git
 cd fedeira-investment-services
 npm install
+```
 
 ## 🔧 Running Locally (Test Mode)
 
@@ -44,12 +46,16 @@ This ensures that DynamoDB is running and accessible.
 npm run offline-db-migrate
 This will create required tables in the local DynamoDB instance.
 
-### 4. Start the Serverless Offline API:
+### 4. Create a .env file in the root directory:
+
+Use as guide the .env.example file to create your own .env file.
+
+### 5. Start the Serverless Offline API:
 
 npm run offline
 This will start a local API endpoint at http://localhost:3000.
 
-### Test the API: Use Postman or any other tool to test the API
+### Test the API: Use Postman or your preferred tool to test the endpoints.
 
 ## 🚀 Deploying to AWS (Production Mode)
 
@@ -100,10 +106,39 @@ serverless logs -f getAvailableBalance View logs for a function
 
 ## 📚 Technologies Used
 
-Node.js & TypeScript
-Serverless Framework
-AWS Lambda
-AWS DynamoDB
-AWS S3
-AWS Systems Manager (SSM)
-Serverless Offline
+- 🟦 Node.js + TypeScript
+- ⚙️ Serverless Framework
+- 🟢 AWS Lambda
+- 📦 AWS DynamoDB
+- ☁️ AWS S3
+- 🔐 AWS SSM Parameter Store
+- 🧪 Serverless Offline (local testing)
+
+## 🗂 Project Structure
+
+fedeira-investment-services/services/
+├── application/ # Business logic (use cases and interfaces)
+│ ├── interfaces/ # Abstract interfaces (repositories, services)
+│ └── usecases/ # Application use cases (e.g., Login, Authorize, GetBalance)
+│
+├── domain/ # Pure domain entities and models
+│ └── account/ # Domain models related to accounts (e.g., Balance, Token)
+│
+├── infrastructure/ # External layer: controllers, services, implementations
+│ ├── controllers/ # Handle HTTP/event input/output and invoke use cases
+│ ├── repositories/ # Implementations of repositories (e.g., PPI API, DynamoDB)
+│ ├── services/ # Internal services (e.g., JWT, caching, SSM access)
+│ └── factories/ # Functions that instantiate and wire dependencies
+│
+├── config/ # Shared config (axios setup, constants, etc.)
+│
+├── utils/ # Utility functions and helpers
+│
+├── handler.ts # Main Lambda handler
+├── serverless.yml # Serverless Framework configuration
+├── tsconfig.json # TypeScript compiler configuration
+├── .env # Local environment variables (ignored in production)
+├── package.json # Project metadata and scripts
+└── docs/ # Project documentation and architecture diagrams
+
+This structure follows the principles of Clean Architecture, ensuring separation of concerns and maintainability.

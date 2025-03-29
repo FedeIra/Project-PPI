@@ -2,7 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 type Environment = 'development' | 'production';
-const ENV: Environment = (process.env.NODE_ENV as Environment) || 'development';
+export const ENV: Environment =
+  (process.env.NODE_ENV as Environment) || 'development';
 
 export const PPI_BASE_URL = {
   development: `${process.env.BASE_URL_PPI_TEST}/${process.env.API_VERSION_PPI}`,
@@ -47,5 +48,8 @@ export const CONFIG = {
     OK: 200,
     BAD_REQUEST: 400,
     INTERNAL_SERVER_ERROR: 500,
+  },
+  USER_DATA: {
+    EMAIL: process.env.USER_EMAIL,
   },
 };
