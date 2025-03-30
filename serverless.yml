@@ -5,7 +5,7 @@ frameworkVersion: '4'
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
-  - serverless-secrets-plugin
+  # - serverless-secrets-plugin
 
 # AWS provider configuration:
 provider:
@@ -68,7 +68,9 @@ provider:
             - 'dynamodb:PutItem'
             - 'dynamodb:UpdateItem'
             - 'dynamodb:DeleteItem'
-          Resource: 'arn:aws:dynamodb:us-east-2:${aws:accountId}:table/${self:provider.environment.INVESTMENT_TABLE}'
+          Resource:
+            - arn:aws:dynamodb:us-east-2:${aws:accountId}:table/${self:provider.environment.INVESTMENT_TABLE}
+            - arn:aws:dynamodb:us-east-2:${aws:accountId}:table/UserCredentials
         # Permit for logs operations in cloudwatch
         - Effect: 'Allow'
           Action:
@@ -139,21 +141,32 @@ resources:
           - AttributeName: investmentId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    UserCredentialsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UserCredentials
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
     # Bucket creation
-    S3InvestmentBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: investment-fedeira-bucket
-        PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-        BucketEncryption:
-          ServerSideEncryptionConfiguration:
-            - ServerSideEncryptionByDefault:
-                SSEAlgorithm: AES256
+    # S3InvestmentBucket:
+    #   Type: AWS::S3::Bucket
+    #   Properties:
+    #     BucketName: investment-fedeira-bucket
+    #     PublicAccessBlockConfiguration:
+    #       BlockPublicAcls: true
+    #       BlockPublicPolicy: true
+    #       IgnorePublicAcls: true
+    #       RestrictPublicBuckets: true
+    #     BucketEncryption:
+    #       ServerSideEncryptionConfiguration:
+    #         - ServerSideEncryptionByDefault:
+    #             SSEAlgorithm: AES256
 
   Outputs:
     DynamoDBEndpoint:

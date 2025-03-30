@@ -10,13 +10,26 @@ interface TableDefinition {
 const dynamoDb = new AWS.DynamoDB({
   region: 'localhost',
   endpoint: 'http://localhost:8000',
+  accessKeyId: 'fakeMyKeyId',
+  secretAccessKey: 'fakeSecretAccessKey',
 });
 
 const tables: TableDefinition[] = [
   {
-    TableName: 'CreditBehavior',
-    KeySchema: [{ AttributeName: 'nadroCode', KeyType: 'HASH' }],
-    AttributeDefinitions: [{ AttributeName: 'nadroCode', AttributeType: 'S' }],
+    TableName: 'InvestmentRecords',
+    KeySchema: [{ AttributeName: 'investmentId', KeyType: 'HASH' }],
+    AttributeDefinitions: [
+      { AttributeName: 'investmentId', AttributeType: 'S' },
+    ],
+    ProvisionedThroughput: {
+      ReadCapacityUnits: 5,
+      WriteCapacityUnits: 5,
+    },
+  },
+  {
+    TableName: 'UserCredentials',
+    KeySchema: [{ AttributeName: 'email', KeyType: 'HASH' }],
+    AttributeDefinitions: [{ AttributeName: 'email', AttributeType: 'S' }],
     ProvisionedThroughput: {
       ReadCapacityUnits: 5,
       WriteCapacityUnits: 5,

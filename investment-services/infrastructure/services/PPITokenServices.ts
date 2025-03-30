@@ -7,7 +7,6 @@ import { CONFIG } from '../../config/constants';
 // External Dependencies:
 import axios from 'axios';
 
-// TODO: IF PARA NO USAR SSM EN LOCAL
 // Service for PPI Token:
 export class PPITokenService {
   // Get PPI token:

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="Vdi4ofhjB4CxRGsWaWzr" name="architecture v1">
-        <mxGraphModel dx="1585" dy="971" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
+        <mxGraphModel dx="1900" dy="914" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="#FFFFFF" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -59,7 +59,7 @@
                 <mxCell id="106" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;" parent="1" source="107" target="118" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="123" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=3;" edge="1" parent="1" source="107" target="122">
+                <mxCell id="123" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=3;" parent="1" source="107" target="122" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="107" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-api&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
@@ -113,8 +113,14 @@
                 <mxCell id="121" value="&lt;span style=&quot;font-size: 15px; font-weight: 700;&quot;&gt;investment-api-auth&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="63.75" y="1040" width="152.5" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="122" value="AWS Systems Manager" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.systems_manager;" vertex="1" parent="1">
+                <mxCell id="122" value="AWS Systems Manager" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#ffffff;fillColor=#232F3E;dashed=0;verticalLabelPosition=middle;verticalAlign=bottom;align=center;html=1;whiteSpace=wrap;fontSize=10;fontStyle=1;spacing=3;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.systems_manager;" parent="1" vertex="1">
                     <mxGeometry x="491" y="962" width="80" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="124" value="" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png" vertex="1" parent="1">
+                    <mxGeometry x="152" y="938" width="49" height="54" as="geometry"/>
+                </mxCell>
+                <mxCell id="125" value="user" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="147" y="915" width="60" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
