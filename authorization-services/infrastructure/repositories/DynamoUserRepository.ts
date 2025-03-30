@@ -8,16 +8,18 @@ import { IUserRepository } from '../../application/interfaces/IUserRepository';
 // const dynamoDb = new DynamoDB.DocumentClient();
 const isOffline = process.env.IS_OFFLINE === 'true';
 
-const dynamoDb = new DynamoDB.DocumentClient(
-  isOffline
-    ? {
-        region: 'localhost',
-        endpoint: 'http://localhost:8000',
-        accessKeyId: 'fake',
-        secretAccessKey: 'fake',
-      }
-    : {}
-);
+let dynamoDb: DynamoDB.DocumentClient;
+
+if (isOffline) {
+  dynamoDb = new DynamoDB.DocumentClient({
+    region: 'localhost',
+    endpoint: 'http://localhost:8000',
+    accessKeyId: 'fake',
+    secretAccessKey: 'fake',
+  });
+} else {
+  dynamoDb = new DynamoDB.DocumentClient();
+}
 
 const TABLE_NAME = 'UserCredentials';
 
@@ -32,9 +34,11 @@ export class DynamoUserRepository implements IUserRepository {
         .promise();
 
       const user = result.Item;
+
       if (!user || !user.password) return false;
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
+
       return isPasswordValid;
     } catch (error) {
       return false;

@@ -10,7 +10,20 @@ export class LoginController {
 
   async handle(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
     try {
-      const body = JSON.parse(event.body || '{}');
+      let body: any = {};
+
+      if (event.isBase64Encoded) {
+        const decoded = Buffer.from(event.body || '', 'base64').toString(
+          'utf-8'
+        );
+        body = JSON.parse(decoded);
+      } else {
+        body =
+          typeof event.body === 'string'
+            ? JSON.parse(event.body)
+            : event.body || {};
+      }
+
       const { email, password } = body;
 
       if (!email || !password) {
@@ -29,7 +42,7 @@ export class LoginController {
     } catch (error) {
       return {
         statusCode: 401,
-        body: JSON.stringify({ message: error.message || 'Unauthorized.' }),
+        body: JSON.stringify({ message: 'Invalid credentials.' }),
       };
     }
   }

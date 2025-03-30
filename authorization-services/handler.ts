@@ -7,7 +7,7 @@ import {
 
 // Internal Dependencies:
 import { JwtService } from './infrastructure/services/JwtService';
-import { DynamoUserRepository } from './infrastructure/repositories/DyanmoUserRepository';
+import { DynamoUserRepository } from './infrastructure/repositories/DynamoUserRepository';
 import { LoginUseCase } from './application/usecases/LoginUseCase';
 import { AuthorizerUseCase } from './application/usecases/AuthorizerUseCase';
 import { LoginController } from './infrastructure/controllers/LoginController';
