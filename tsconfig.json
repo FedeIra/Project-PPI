@@ -17,6 +17,6 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["investment-services/**/*"],
+  "include": ["investment-services/**/*", "authorization-services/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,11 +1,24 @@
 // External dependencies:
 import { DynamoDB } from 'aws-sdk';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Internal dependencies:
 import { IUserRepository } from '../../application/interfaces/IUserRepository';
 
-const dynamoDb = new DynamoDB.DocumentClient();
+// const dynamoDb = new DynamoDB.DocumentClient();
+const isOffline = process.env.IS_OFFLINE === 'true';
+
+const dynamoDb = new DynamoDB.DocumentClient(
+  isOffline
+    ? {
+        region: 'localhost',
+        endpoint: 'http://localhost:8000',
+        accessKeyId: 'fake',
+        secretAccessKey: 'fake',
+      }
+    : {}
+);
+
 const TABLE_NAME = 'UserCredentials';
 
 export class DynamoUserRepository implements IUserRepository {

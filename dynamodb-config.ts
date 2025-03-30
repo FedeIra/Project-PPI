@@ -10,6 +10,8 @@ interface TableDefinition {
 const dynamoDb = new AWS.DynamoDB({
   region: 'localhost',
   endpoint: 'http://localhost:8000',
+  accessKeyId: 'fakeMyKeyId',
+  secretAccessKey: 'fakeSecretAccessKey',
 });
 
 const tables: TableDefinition[] = [
